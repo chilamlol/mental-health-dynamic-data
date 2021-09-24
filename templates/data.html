@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link crossorigin="anonymous"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"
+          rel="stylesheet"/>
+    <!--Chart js-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <title>Mental Health</title>
+
+    <!--MY vs US (suicide rate) Line Chart -->
+    <script>
+        var chartData = {{ chart|safe }}
+
+        const config = {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: "Malaysia",
+                    backgroundColor: 'rgb(75, 192, 192)',
+                    data: chartData.myValue
+                },
+                    {
+                        label: "US",
+                        backgroundColor: 'rgb(255, 145, 164)',
+                        data: chartData.usValue
+                    }
+                ],
+                labels: chartData.labels
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: chartData.title
+                }
+            }
+        };
+
+        function printChart() {
+            const ctx = document.getElementById("lineChart").getContext("2d");
+            const chart = new Chart(ctx, config);
+        }
+
+
+    </script>
+    <style>
+        h1 {
+            font-size: 200%;
+            text-align: center;
+        }
+
+        .bigger-container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .container {
+            width: 100%;
+            height: 600px;
+            overflow: auto;
+            border: solid black 1px;
+        }
+
+        .container table th {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 0;
+            background: lightblue;
+        }
+
+        .box {
+            margin: auto;
+            width: 80%;
+        }
+
+    </style>
+</head>
+<body onload="printChart()">
+<h1>Mental Health Suicide rates</h1>
+<div class="box">
+    <form method="GET">
+        <label for="year">Choose a year:</label>
+        <select id="year" name="year">
+            <option selected value="2019">2019</option>
+            <option value="2018">2018</option>
+            <option value="2017">2017</option>
+            <option value="2016">2016</option>
+            <option value="2015">2015</option>
+            <option value="2014">2014</option>
+            <option value="2013">2013</option>
+            <option value="2012">2012</option>
+            <option value="2011">2011</option>
+            <option value="2010">2010</option>
+        </select>
+        <input type="submit" name="submit">
+    </form>
+    {% if data %}
+        <div class="container">
+            <table class="table is-fullwidth is-striped is-bordered">
+                <thead>
+                <tr>
+                    <th>Country</th>
+                    <th>GHO</th>
+                    <th>Publish State</th>
+                    <th>Region</th>
+                    <th>Sex</th>
+                    <th>Year</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for d in data %}
+                    <tr>
+                        <td>{{ d.dim.COUNTRY }}</td>
+                        <td>{{ d.dim.GHO }}</td>
+                        <td>{{ d.dim.PUBLISHSTATE }}</td>
+                        <td>{{ d.dim.REGION }}</td>
+                        <td>{{ d.dim.SEX }}</td>
+                        <td>{{ d.dim.YEAR }}</td>
+                        <td>{{ d.Value }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+<br><br>
+</div>
+
+<br><br><br><br><br>
+<!--Line Chart -->
+<div class="box">
+<h1>Line Chart</h1>
+    {% if chart %}
+        <canvas id="lineChart"></canvas>
+    {% endif %}
+</div>
+<br>
+</body>
+</html>
